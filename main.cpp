@@ -239,10 +239,12 @@ static void coldboot(const char* path) {
 static int process_config(VolumeManager* vm, VoldConfigs* configs) {
     ATRACE_NAME("process_config");
 
-    if (!ReadDefaultFstab(&fstab_default)) {
+    if (!ReadFstabFromFile("/proc/mounts", &fstab_default)) {
         PLOG(ERROR) << "Failed to open default fstab";
         return -1;
     }
+
+    if (1) return 0;
 
     /* Loop through entries looking for ones that vold manages */
     configs->has_adoptable = false;
