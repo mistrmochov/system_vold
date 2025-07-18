@@ -57,7 +57,7 @@ static bool valid_uuid(const std::string& s) {
 static bool prepare_dir_for_user(struct selabel_handle* sehandle, mode_t mode, uid_t uid, gid_t gid,
                                  const std::string& path, uid_t user_id) {
     auto clearfscreatecon = android::base::make_scope_guard([] { setfscreatecon(nullptr); });
-    auto secontext = std::unique_ptr<char, void (*)(char*)>(nullptr, freecon);
+    /*auto secontext = std::unique_ptr<char, void (*)(char*)>(nullptr, freecon);
     char* tmp_secontext;
 
     if (selabel_lookup(sehandle, &tmp_secontext, path.c_str(), S_IFDIR) == 0) {
@@ -83,11 +83,11 @@ static bool prepare_dir_for_user(struct selabel_handle* sehandle, mode_t mode, u
 
     LOG(DEBUG) << "Setting up mode " << std::oct << mode << std::dec << " uid " << uid << " gid "
                << gid << " context " << (secontext ? secontext.get() : "null")
-               << " on path: " << path;
+               << " on path: " << path;*/
     if (fs_prepare_dir(path.c_str(), mode, uid, gid) != 0) {
         return false;
     }
-    if (secontext) {
+    /*if (secontext) {
         char* tmp_oldsecontext = nullptr;
         if (lgetfilecon(path.c_str(), &tmp_oldsecontext) < 0) {
             PLOG(ERROR) << "Unable to read secontext for: " << path;
@@ -102,7 +102,7 @@ static bool prepare_dir_for_user(struct selabel_handle* sehandle, mode_t mode, u
                 return false;
             }
         }
-    }
+    }*/
     return true;
 }
 
