@@ -1497,6 +1497,10 @@ bool writeStringToFile(const std::string& payload, const std::string& filename) 
 }
 
 status_t AbortFuseConnections() {
+    // Waydroid: this is not safe because fusectl has no container isolation
+    // so we would be aborting host FUSE connections.
+    return OK;
+
     namespace fs = std::filesystem;
 
     static constexpr const char* kFuseConnections = "/sys/fs/fuse/connections";
