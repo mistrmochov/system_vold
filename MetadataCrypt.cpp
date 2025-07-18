@@ -293,6 +293,10 @@ bool fscrypt_mount_metadata_encrypted(const std::string& blk_device, const std::
                                       const std::string& fs_type, bool is_zoned,
                                       const std::vector<std::string>& user_devices,
                                       const std::vector<bool>& device_aliased, int64_t length) {
+
+    // Disabled for Halium
+    return false;
+
     LOG(DEBUG) << "fscrypt_mount_metadata_encrypted: " << mount_point
                << " encrypt: " << needs_encrypt << " format: " << should_format << " with "
                << fs_type << " block device: " << blk_device << " with zoned " << is_zoned
