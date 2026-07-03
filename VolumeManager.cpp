@@ -32,6 +32,8 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <array>
+#include <filesystem>
+#include <system_error>
 
 #include <linux/kdev_t.h>
 
@@ -1289,6 +1291,7 @@ int VolumeManager::openAppFuseFile(uid_t uid, int mountId, int fileId, int flags
     return android::vold::OpenAppFuseFile(uid, mountId, fileId, flags);
 }
 
+#if 0 // Disabled in Waydroid
 static android::status_t getDeviceSize(std::string& device, int64_t* storageSize,
                                        bool isF2fsPrimary) {
     // Follow any symbolic links
@@ -1385,8 +1388,10 @@ static android::status_t getDeviceSize(std::string& device, int64_t* storageSize
     *storageSize = sizeNum;
     return OK;
 }
+#endif
 
 android::status_t android::vold::GetStorageSize(int64_t* storageSize) {
+#if 0 // Disabled in Waydroid
     android::status_t status;
     // Start with the /data mount point from fs_mgr
     auto entry = android::fs_mgr::GetEntryForMountPoint(&fstab_default, DATA_MNT_POINT);
@@ -1415,6 +1420,19 @@ android::status_t android::vold::GetStorageSize(int64_t* storageSize) {
         }
         *storageSize += deviceStorageSize;
     }
+#else
+    std::error_code error;
+
+    // Read storage size in filesystem level
+    std::filesystem::space_info info = std::filesystem::space(DATA_MNT_POINT, error);
+
+    if (error.value() != 0) {
+        LOG(ERROR) << "Could not get filesystem capacity of " << DATA_MNT_POINT << ": " << error.message();
+        return error.value();
+    }
+
+    *storageSize = info.capacity;
+#endif
 
     return OK;
 }
